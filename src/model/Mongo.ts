@@ -69,7 +69,7 @@ export class Mongodb {
                 } else {
                     data = Book.findOne({
                         where: {
-                            bookId,
+                            _id: bookId,
                             isBookDeleted: false
                         }
                     })
@@ -81,13 +81,15 @@ export class Mongodb {
         })
     }
 
-    setBook(bookData: any): Promise<any> {
-        return new Promise((resolve, reject) => {
+    async setBook(bookData: any): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            logger.silly('saving new book in db')
             let data: any;
             try {
-                data = Book.create({
-                    bookData
+                data = await Book.create({
+                    ...bookData
                 })
+                return resolve(true)
             } catch(err){
                 return reject(err)
             }
@@ -95,18 +97,17 @@ export class Mongodb {
     }
 
     deleteBook(bookId: string, userId: string): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
-                Book.update({
-                    isBookDeleted: true
-                },
-                {
+                const data = await Book.findOne({
                     where: {
-                        bookId,
-                        uploadedBy: userId
+                        _id: bookId,
+                        uploadedBy: userId,
+                        isBookDeleted: false
                     }
                 })
-                return resolve(true)
+                if(data === null ) return reject(null)
+                return resolve(data)
             } catch(err) {
                 return reject(err)
             }

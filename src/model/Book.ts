@@ -2,15 +2,18 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
+const chapterSchema = new Schema({
+    chapterNo: {
+        type: Number
+    },
+    chapterName: {
+        type: String
+    }
+    }, {
+    _id: false
+})
 
 const bookSchema = new Schema({
-    _id: {
-        type: false,
-    },
-    bookId: {
-        type: String,
-        primaryKey: true
-    },
     title: {
         type: String
     },
@@ -22,10 +25,10 @@ const bookSchema = new Schema({
         type: String
     },
     dateOfPublication: {
-        type: [Schema.Types.Mixed]
+        type: Date
     },
     chapters: {
-        type: [Schema.Types.Mixed]
+        type: [chapterSchema]
     },
     price: {
         type: Number

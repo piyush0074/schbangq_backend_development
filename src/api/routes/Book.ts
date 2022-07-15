@@ -1,28 +1,41 @@
 import { Router } from 'express';
-import { User } from '../../controller/User';
+import { Book } from '../../controller/Book';
 import middleware  from '../middlewares';
 
 const route = Router();
 
 export default ( app: Router) => {
-    app.use('',route);
-    const user = new User()
-    route.post(
-        '/register',
-        middleware.UserReqValidate.registerRequestValidate,
+    app.use('/book',route);
+    const book = new Book()
+    route.get(
+        '/getbook',
+        // middleware.UserReqValidate.registerRequestValidate,
         (req,res) => {
-            user.registerUser(req,res)
+            book.getBook(req,res)
         }
     )
 
     route.post(
-        '/login',
-        middleware.UserReqValidate.loginRequestValidate,
+        '/addbook',
+        // middleware.UserReqValidate.loginRequestValidate,
         (req,res) => {
-            user.login(req,res)
+            book.addBook(req,res)
         }
     )
 
+    route.delete(
+        '/deletebook',
+        (req,res) => {
+            book.deleteBook(req,res)
+        }
+    )
+
+    route.patch(
+        'updatebook',
+        (req,res) => {
+            book.UpdateBook(req,res)
+        }
+    )
 
     route.post('/')
 }
