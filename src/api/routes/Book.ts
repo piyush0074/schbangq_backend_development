@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { Book } from '../../controller/Book';
-import logger from '../../loaders/Logger';
 import middleware  from '../middlewares';
 
 const route = Router();
@@ -11,7 +10,7 @@ export default ( app: Router) => {
 
     route.get(
         '/getbook',
-        // middleware.UserReqValidate.registerRequestValidate,
+        middleware.AuthReqValidate.auth,
         (req,res) => {
             book.getBook(req,res)
         }
@@ -20,6 +19,7 @@ export default ( app: Router) => {
     route.post(
         '/addbook',
         middleware.BookReqValidate.addBookRequestValidate,
+        middleware.AuthReqValidate.auth,
         (req,res) => {
             book.addBook(req,res)
         }
@@ -28,6 +28,7 @@ export default ( app: Router) => {
     route.delete(
         '/deletebook',
         middleware.BookReqValidate.deleteBookRequestValidate,
+        middleware.AuthReqValidate.auth,
         (req,res) => {
             book.deleteBook(req,res)
         }
@@ -36,6 +37,7 @@ export default ( app: Router) => {
     route.patch(
         '/updatebook',
         middleware.BookReqValidate.updateBookRequestValidate,
+        middleware.AuthReqValidate.auth,
         (req,res) => {
             book.UpdateBook(req,res)
         }

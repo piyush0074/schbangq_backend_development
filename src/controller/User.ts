@@ -54,8 +54,9 @@ export class User {
         }
 
         const token = jwt.sign(
-            data,
-            jwtSecretKey,
+            { userId },
+            config.jwtSecret,
+            { expiresIn: '2h' }
         );
         return token
 

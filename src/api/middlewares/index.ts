@@ -1,8 +1,9 @@
-import { ReqValidate } from './updateDataRequest';
+import { AuthReqValidate } from './Auth';
 import { UserReqValidate } from './User';
 import { BookReqValidate } from './Book';
+
 export default {
-  ReqValidate,
+  AuthReqValidate,
   UserReqValidate,
   BookReqValidate
 };
