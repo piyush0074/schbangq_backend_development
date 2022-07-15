@@ -1,4 +1,5 @@
 import { createLogger, format, transports } from 'winston';
+import config from '../config';
 
 const { splat, combine, timestamp, printf } = format;
 
@@ -19,7 +20,7 @@ const customLevels = {
 };
 
 const logger = createLogger({
-  level: 'silly',
+  level: config.logs.level,
   format: formats,
   transports: [
     new transports.Console({
