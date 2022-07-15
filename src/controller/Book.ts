@@ -7,17 +7,19 @@ import { Server } from '../loaders/Server';
 export class Book {
 
     public async getBook(req: Request, res: Response) {
-        const bookId: string = String(req.query.bookId) || null;
+        const bookId: string = String(req.query.bookId);
         let bookData: any;
         try {
-            if(bookId === null) {
-                bookData = Server.instance.mongodb.getBook(
+            logger.silly(bookId)
+            if(bookId === "undefined") {
+                logger.debug('book id not found')
+                bookData = await Server.instance.mongodb.getBook(
                     true,
                     ''
                 )
             } else {
-
-                bookData = Server.instance.mongodb.getBook(
+                logger.debug('book id found')
+                bookData = await Server.instance.mongodb.getBook(
                     false,
                     String(req.query.bookId)
                     );
@@ -29,8 +31,8 @@ export class Book {
             }
             return new SuccessResponse('result found...',bookData).send(res)
         } catch(err) {
-            logger.error(err);
-            return new BadRequestResponse(err).send(res);
+            logger.error("Error in fetching book : "+err);
+            return new BadRequestResponse("Error in fetching book : "+err).send(res);
         }
 
     }
@@ -43,6 +45,7 @@ export class Book {
             bookData.afterDiscount = bookData.price - discountedPrice;
         }
     }
+
     public async addBook(req: Request, res: Response) {
         logger.info('adding new book')
         let book;
@@ -54,10 +57,11 @@ export class Book {
             price: req.body.price,
             uploadedBy: req.body.userId
         }
-        const flag: boolean = await this.isUserExist(req.body.userId)
-        if(!flag) {
-            return new BadRequestResponse('User doesnt exist').send(res)
-        }
+
+        this.checkUser(
+            res,
+            req.body.userId
+        )
 
         try {
             logger.silly(param.dateOfPublication)
@@ -84,16 +88,22 @@ export class Book {
     }
 
     public async UpdateBook(req: Request, res: Response) {
+        logger.info('updating book')
         let bookData: any;
-        if(!this.isUserExist(req.body.userId)) {
-            return new BadRequestResponse('User doesnt exist').send(res)
-        }
+
+        this.checkUser(
+            res,
+            req.body.userId
+        )
+
         try {
-            bookData = Server.instance.mongodb.getBook(
+            logger.silly(req.body.bookId)
+            bookData = await Server.instance.mongodb.getBook(
                 false,
-                String(req.query.bookId)
+                req.body.bookId
             );
-            this.swapBookData(
+
+            await this.swapBookData(
                 bookData,
                 req
             );
@@ -104,17 +114,23 @@ export class Book {
         }
     }
 
-    private swapBookData(bookData:any, req: Request) {
+    private async swapBookData(bookData:any, req: Request) {
         bookData.title = req.body.title || bookData.title
         bookData.author = req.body.author || bookData.author
         bookData.dateOfPublication = req.body.dateOfPublication || bookData.dateOfPublication
         bookData.chapters = req.body.chapters || bookData.chapters
         bookData.price = req.body.price || bookData.price
-
+        logger.debug('swap data')
     }
     public async deleteBook(req: Request, res: Response) {
         logger.info("deleting book")
         let bookData:any;
+
+        this.checkUser(
+            res,
+            String(req.query.userId)
+        )
+
         try {
             bookData = await Server.instance.mongodb.deleteBook(
                 String(req.query.bookId),
@@ -126,6 +142,14 @@ export class Book {
         } catch(err) {
             logger.error("Error in deleting book : "+err)
             return new BadRequestResponse("Error in deleting book : "+err).send(res)
+        }
+    }
+
+    private async checkUser(res: Response,userId: string) {
+        const flag: boolean = await this.isUserExist(userId)
+
+        if(!flag) {
+            return new BadRequestResponse('User doesnt exist').send(res)
         }
     }
 }

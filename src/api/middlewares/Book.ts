@@ -26,6 +26,27 @@ export class BookReqValidate{
         }
     }
 
+    public static updateBookRequestValidate(req: Request, res: Response, next: any) {
+        const schemaRules = {
+            userId: Joi.string().required(),
+            bookId: Joi.string().required(),
+            title: Joi.string().required(),
+            author:  Joi.string().required(),
+            dateOfPublication:  Joi.string().required(),
+            chapters:  Joi.required(),
+            price:  Joi.number().required()
+        }
+        const schema = Joi.object(schemaRules);
+
+        const { error, value } = schema.validate(req.body);
+
+        if(error) {
+            logger.error(JSON.stringify(error));
+            throw new BadRequestError(JSON.stringify(error));
+        } else {
+            next();
+        }
+    }
     public static loginRequestValidate(req: Request, res: Response, next: any) {
         const schemaRules = {
             userId: Joi.string().min(5).max(15).required(),

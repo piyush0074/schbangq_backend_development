@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { Book } from '../../controller/Book';
+import logger from '../../loaders/Logger';
 import middleware  from '../middlewares';
 
 const route = Router();
 
 export default ( app: Router) => {
     app.use('/book',route);
-    const book = new Book()
+    const book = new Book();
+
     route.get(
         '/getbook',
         // middleware.UserReqValidate.registerRequestValidate,
@@ -31,7 +33,7 @@ export default ( app: Router) => {
     )
 
     route.patch(
-        'updatebook',
+        '/updatebook',
         (req,res) => {
             book.UpdateBook(req,res)
         }

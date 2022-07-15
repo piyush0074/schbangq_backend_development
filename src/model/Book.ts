@@ -50,6 +50,6 @@ const bookSchema = new Schema({
     }
 });
 
-const Users = mongoose.model('book', bookSchema);
+const Books = mongoose.model('book', bookSchema);
 
-module.exports = Users;
+module.exports = Books;

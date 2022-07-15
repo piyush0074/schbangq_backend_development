@@ -65,15 +65,12 @@ export class Server {
             logger.error(err);
             return res.status(500).send(err.message);
           }
-          logger.error(err);
+          logger.error("Error in S : "+err);
           ApiError.handle(new InternalError('internal error...'), res);
         }
       });
     } catch (error) {
       logger.error('Server error occured in server.start ' + error);
     }
-  }
-  private uniqueId(req: Request, res: Response, next: NextFunction) {
-    next();
   }
 }

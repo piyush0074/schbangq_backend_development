@@ -1,4 +1,3 @@
-require('dotenv').config();
 import mongoose from 'mongoose';
 import logger from "../loaders/Logger";
 import config from "../config";
@@ -14,12 +13,9 @@ export class Mongodb {
             logger.info('Mongodb init.');
             try {
                 const mongoDB = config.DatabaseURL;
-                // tslint:disable-next-line:no-console
-                // console.log('url : ',mongoDB);
                 logger.info("URI : " + mongoDB)
                 await mongoose.connect(mongoDB);
                 const db = mongoose.connection;
-                // Bind connection to error event (to get notification of connection errors)
 
                 db.on('error',
                     // tslint:disable-next-line:no-console
@@ -51,7 +47,7 @@ export class Mongodb {
                     "userId": userId,
                     "password": password
                 });
-                user.save()
+                await user.save()
                 return resolve(user)
             } catch (err) {
                 logger.error('Error while saving user data. ' + err)
@@ -60,21 +56,24 @@ export class Mongodb {
     }
 
     getBook(flag: boolean, bookId: string): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let data: any;
             try {
+                logger.silly(flag)
                 if(flag) {
-                    const a = 0;
-                    data = Book.findAll();
+                    data = await Book.find({
+                        isBookDeleted: false
+                    });
                 } else {
-                    data = Book.findOne({
-                        where: {
-                            _id: bookId,
-                            isBookDeleted: false
-                        }
+                    logger.silly(bookId)
+                    data = await Book.findOne({
+                        _id: bookId,
+                        isBookDeleted: false
                     })
                 }
+                logger.silly(data)
                 if( data !== null) return resolve(data)
+                return reject(null)
             } catch(err) {
                 return reject(err)
             }
@@ -100,11 +99,9 @@ export class Mongodb {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await Book.findOne({
-                    where: {
                         _id: bookId,
                         uploadedBy: userId,
                         isBookDeleted: false
-                    }
                 })
                 if(data === null ) return reject(null)
                 return resolve(data)
