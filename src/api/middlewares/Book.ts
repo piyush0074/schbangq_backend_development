@@ -3,10 +3,15 @@ import Joi from 'joi';
 import logger from '../../loaders/Logger';
 
 import { BadRequestError } from '../../core/APIerror';
+import { SuccessMsgResponse, SuccessResponse } from '../../core/APIresponse';
 
 export class BookReqValidate{
 
     public static addBookRequestValidate(req: Request, res: Response, next: any) {
+
+        // console.log(req)
+        // logger.silly(req.)
+        // return new SuccessResponse('',req.file).send(res)
         const schemaRules = {
             userId: Joi.string().min(5).max(15).required(),
             title: Joi.string().min(5).max(40).required(),
@@ -18,8 +23,8 @@ export class BookReqValidate{
                   chapterName: Joi.string().min(3).max(30).required()
                 })
               ).required(),
-            uploadedBy: Joi.string().min(5).max(15).required(),
-            price:  Joi.number().min(10).required()
+            price:  Joi.number().min(10).required(),
+            image: Joi.any()
         }
         const schema = Joi.object(schemaRules);
 
@@ -29,6 +34,7 @@ export class BookReqValidate{
             logger.error(JSON.stringify(error));
             throw new BadRequestError(JSON.stringify(error));
         } else {
+            logger.debug('param verified')
             next();
         }
     }
@@ -56,6 +62,7 @@ export class BookReqValidate{
             logger.error(JSON.stringify(error));
             throw new BadRequestError(JSON.stringify(error));
         } else {
+            logger.debug('param verified')
             next();
         }
     }
@@ -73,6 +80,7 @@ export class BookReqValidate{
             logger.error(JSON.stringify(error));
             throw new BadRequestError(JSON.stringify(error));
         } else {
+            logger.debug('param verified')
             next();
         }
     }

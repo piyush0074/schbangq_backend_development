@@ -26,6 +26,8 @@ export class User {
     public async login(req: Request, res: Response) {
         let token: string;
         try {
+
+
             const user = await Server.instance.mongodb.getUser(
                 req.body.userId,
             )

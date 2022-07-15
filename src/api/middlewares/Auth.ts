@@ -11,12 +11,13 @@ export class AuthReqValidate{
         const user = req.query.userId || req.body.userId;
 
         let token:any;
-
+logger.debug(user)
         if (
           (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||
           (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
         ) {
             token = req.headers.authorization.split(' ')[1];
+            logger.debug(token)
         } else {
           logger.error('token not found..')
           return new BadRequestResponse('Token not found').send(res)
@@ -27,19 +28,20 @@ export class AuthReqValidate{
 
             if (err.message === 'jwt expired'){
 
-              throw new TokenExpiredError();
+              throw new BadRequestResponse('Token expired').send(res);
             }
             throw new BadTokenError();
 
           } else {
-            // console.log('d : ',decoded.user)
-            // console.log('u : ',user);
-            if( decoded.user === user){
-
+            logger.debug('d : ',decoded)
+            logger.debug('u : ',user);
+            if( decoded.userId === user){
+              logger.debug('Token verifed')
               next()
 
             } else {
-              return new BadTokenError();
+              logger.debug('Token verified failed')
+              return new BadRequestResponse('Inavild token or userId').send(res);
 
             }
           }

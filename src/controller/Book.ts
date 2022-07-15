@@ -18,16 +18,18 @@ export class Book {
                     ''
                 )
             } else {
-                logger.debug('book id found')
                 bookData = await Server.instance.mongodb.getBook(
                     false,
                     String(req.query.bookId)
                     );
 
-                this.getDiscountPrice(
+                bookData = this.getDiscountPrice(
                     req,
+                    res,
                     bookData
                 )
+                if(bookData === null) return new BadRequestResponse('Invalid coupon code').send(res)
+
             }
             return new SuccessResponse('result found...',bookData).send(res)
         } catch(err) {
@@ -37,12 +39,25 @@ export class Book {
 
     }
 
-    private getDiscountPrice(req:Request, bookData: any) {
+    private getDiscountPrice(req:Request,res: Response, bookData: any) {
         const couponCode: string = String(req.query.couponCode)
         let discountedPrice: number = 0;
         if(couponCode === config.CouponCode) {
-            discountedPrice = Math.ceil((bookData * config.CouponDiscount) / 100);
+            discountedPrice = Math.ceil((bookData.price * config.CouponDiscount) / 100);
             bookData.afterDiscount = bookData.price - discountedPrice;
+            const data = {
+                afterDiscount: bookData.price - discountedPrice,
+                title : bookData.title,
+                author : bookData.author,
+                dateOfPublication : bookData.dateOfPublication,
+                chapters : bookData.chapters,
+                price : bookData.price,
+                uploadedBy: bookData.uploadedBy
+
+            }
+            return data;
+        } else {
+            return null;
         }
     }
 
@@ -71,19 +86,8 @@ export class Book {
             return new SuccessMsgResponse('book added successfully').send(res)
         } catch(err) {
             logger.error('Error in add book'+err);
-            return new BadRequestResponse('Error in add book : '+err).send(res)
-        }
-    }
+            return new BadRequestResponse('Error in add book : '+err).send(res);
 
-    private async isUserExist(userId: string): Promise<boolean> {
-        logger.info("checking user exist or not")
-        try {
-            const user = await Server.instance.mongodb.getUser(userId)
-            logger.silly('user found')
-            return true;
-        } catch (err) {
-            logger.error('Error in user exist : '+err);
-            return false
         }
     }
 
@@ -142,6 +146,18 @@ export class Book {
         } catch(err) {
             logger.error("Error in deleting book : "+err)
             return new BadRequestResponse("Error in deleting book : "+err).send(res)
+        }
+    }
+
+    private async isUserExist(userId: string): Promise<boolean> {
+        logger.info("checking user exist or not")
+        try {
+            const user = await Server.instance.mongodb.getUser(userId)
+            logger.silly('user found')
+            return true;
+        } catch (err) {
+            logger.error('Error in user exist : '+err);
+            return false
         }
     }
 

@@ -46,7 +46,7 @@ export class Server {
       this.app.use(express.urlencoded({
         extended: true
       }));
-
+      // this.app.use(multipart())
       this.app.use(config.api.prefix, routes());
       logger.info('Routes initialize.');
 
@@ -55,6 +55,8 @@ export class Server {
       });
 
       this.app.use((req, res, next) => next(new NotFoundError()));
+
+      this.app.use(express.static(__dirname+"./public"));
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

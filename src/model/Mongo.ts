@@ -59,19 +59,38 @@ export class Mongodb {
         return new Promise(async (resolve, reject) => {
             let data: any;
             try {
-                logger.silly(flag)
                 if(flag) {
                     data = await Book.find({
                         isBookDeleted: false
-                    });
+                    }
+                    // {
+                    //     attributes: [
+                    //     'title',
+                    //     'author',
+                    //     'dateOfPublication',
+                    //     'chapters',
+                    //     'price',
+                    //     'uploadedBy'
+                    //     ]
+                    // }
+                    );
                 } else {
-                    logger.silly(bookId)
                     data = await Book.findOne({
                         _id: bookId,
                         isBookDeleted: false
-                    })
+                    }
+                    // {
+                    //     attributes: [
+                    //     'title',
+                    //     'author',
+                    //     'dateOfPublication',
+                    //     'chapters',
+                    //     'price',
+                    //     'uploadedBy'
+                    //     ]
+                    // }
+                    )
                 }
-                logger.silly(data)
                 if( data !== null) return resolve(data)
                 return reject(null)
             } catch(err) {
