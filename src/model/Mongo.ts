@@ -102,7 +102,7 @@ export class Mongodb {
                 },
                 {
                     where: {
-                        bookId: bookId,
+                        bookId,
                         uploadedBy: userId
                     }
                 })
