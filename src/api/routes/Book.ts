@@ -19,7 +19,7 @@ export default ( app: Router) => {
 
     route.post(
         '/addbook',
-        // middleware.UserReqValidate.loginRequestValidate,
+        middleware.BookReqValidate.addBookRequestValidate,
         (req,res) => {
             book.addBook(req,res)
         }
@@ -27,6 +27,7 @@ export default ( app: Router) => {
 
     route.delete(
         '/deletebook',
+        middleware.BookReqValidate.deleteBookRequestValidate,
         (req,res) => {
             book.deleteBook(req,res)
         }
@@ -34,6 +35,7 @@ export default ( app: Router) => {
 
     route.patch(
         '/updatebook',
+        middleware.BookReqValidate.updateBookRequestValidate,
         (req,res) => {
             book.UpdateBook(req,res)
         }
